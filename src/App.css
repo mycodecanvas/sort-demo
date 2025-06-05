@@ -1,0 +1,38 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-size: 14px;
+}
+
+.card {
+  padding: 2em;
+}
+
+th,
+td {
+  padding: 0.5em;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+}
+
+.button-wrapper {
+  margin: 20px 0;
+}
+
+button {
+  height: 40px;
+  width: 120px;
+  border-radius: 4px;
+  margin-right: 15px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+button:hover {
+  cursor: pointer;
+}
