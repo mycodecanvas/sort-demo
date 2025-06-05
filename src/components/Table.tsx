@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { memo, useEffect, useState, type ReactNode } from "react";
 import type { ToDoList } from "../App";
 
 type TableProps = {
@@ -6,7 +6,7 @@ type TableProps = {
   data: ToDoList;
 };
 
-function Table({ headers, data }: TableProps) {
+const Table = memo(function Table({ headers, data }: TableProps) {
   console.log("Table component rendered");
   const [mappedData, setMappedData] = useState<unknown[][]>([]);
   useEffect(() => {
@@ -43,6 +43,10 @@ function Table({ headers, data }: TableProps) {
       </tbody>
     </table>
   );
+}, arePropsEqual);
+
+function arePropsEqual(prevProps: TableProps, nextProps: TableProps) {
+  return JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data);
 }
 
 export default Table;
