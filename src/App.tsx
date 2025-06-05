@@ -1,5 +1,5 @@
 import Table from "./components/Table";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 
 type ToDoItem = {
@@ -12,19 +12,18 @@ export type ToDoList = ToDoItem[];
 
 function App() {
   const [data, setData] = useState<ToDoList>([]);
-  const [sortedData, setSortedData] = useState<ToDoList>([]);
+  const [sortByValue, setSortByValue] = useState<"userId" | "title">("userId");
 
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/todos")
       .then((response) => response.json())
       .then((json) => {
         setData(json);
-        setSortedData(json);
       });
   }, []);
 
   const sortHandler = (value: "userId" | "title") => {
-    setSortedData(sortData(value, data));
+    setSortByValue(value);
   };
 
   const sortData = (value: "userId" | "title", data: ToDoList) => {
@@ -39,6 +38,11 @@ function App() {
     });
     return sortedData;
   };
+
+  const sortedData = useMemo(
+    () => sortData(sortByValue, data),
+    [sortByValue, data]
+  );
 
   return (
     <div>
