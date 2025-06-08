@@ -47,7 +47,7 @@ function App() {
       if (value === "userId") {
         return a.userId - b.userId;
       } else if (value === "title") {
-        return a.title > b.title ? 1 : -1;
+        return a.title.localeCompare(b.title);
       }
       return 0;
     });
