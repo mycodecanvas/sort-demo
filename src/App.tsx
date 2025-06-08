@@ -34,7 +34,7 @@ function App() {
       if (value === "userId") {
         return a.userId - b.userId;
       } else if (value === "title") {
-        return a.title > b.title ? 1 : -1;
+        return a.title.localeCompare(b.title);
       }
       return 0;
     });
@@ -55,7 +55,7 @@ function App() {
       </div>
       {isPending && <p>Loading...</p>}
       {error && <p>Error: {error.message}</p>}
-      {!isPending && data && (
+      {!isPending && !error && data && (
         <Table headers={["User ID", "ID", "Title"]} data={sortedData} />
       )}
     </div>
