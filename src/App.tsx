@@ -1,6 +1,7 @@
 import Table from "./components/Table";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import "./App.css";
+import { useQuery } from "@tanstack/react-query";
 
 type ToDoItem = {
   userId: number;
@@ -9,25 +10,26 @@ type ToDoItem = {
 };
 
 export type ToDoList = ToDoItem[];
+const fetchToDos = async (): Promise<ToDoList> => {
+  return fetch("https://jsonplaceholder.typicode.com/todos")
+    .then((response) => response.json())
+    .then((json) => {
+      return json as ToDoList;
+    });
+};
 
 function App() {
-  const [data, setData] = useState<ToDoList>([]);
   const [sortByValue, setSortByValue] = useState<"userId" | "title">("userId");
-
-  useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/todos")
-      .then((response) => response.json())
-      .then((json) => {
-        setData(json);
-      });
-  }, []);
+  const { isPending, error, data } = useQuery({
+    queryKey: ["todos"],
+    queryFn: fetchToDos,
+  });
 
   const sortHandler = (value: "userId" | "title") => {
     setSortByValue(value);
   };
 
   const sortData = (value: "userId" | "title", data: ToDoList) => {
-    console.log("sort function called!");
     const sortedData = [...data].sort((a, b) => {
       if (value === "userId") {
         return a.userId - b.userId;
@@ -39,10 +41,10 @@ function App() {
     return sortedData;
   };
 
-  const sortedData = useMemo(
-    () => sortData(sortByValue, data),
-    [sortByValue, data]
-  );
+  const sortedData = useMemo(() => {
+    if (!data) return [];
+    return sortData(sortByValue, data);
+  }, [sortByValue, data]);
 
   return (
     <div>
@@ -51,8 +53,11 @@ function App() {
         <button onClick={() => sortHandler("userId")}>Sort By User ID</button>
         <button onClick={() => sortHandler("title")}>Sort By Title</button>
       </div>
-
-      <Table headers={["User ID", "ID", "Title"]} data={sortedData} />
+      {isPending && <p>Loading...</p>}
+      {error && <p>Error: {error.message}</p>}
+      {!isPending && data && (
+        <Table headers={["User ID", "ID", "Title"]} data={sortedData} />
+      )}
     </div>
   );
 }
