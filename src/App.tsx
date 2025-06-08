@@ -13,12 +13,25 @@ export type ToDoList = ToDoItem[];
 function App() {
   const [data, setData] = useState<ToDoList>([]);
   const [sortByValue, setSortByValue] = useState<"userId" | "title">("userId");
+  const [isPending, setIsPending] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/todos")
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Something went wrong!");
+        }
+        return response.json();
+      })
       .then((json) => {
         setData(json);
+      })
+      .catch((error) => {
+        setError(error.message);
+      })
+      .finally(() => {
+        setIsPending(false);
       });
   }, []);
 
@@ -32,7 +45,7 @@ function App() {
       if (value === "userId") {
         return a.userId - b.userId;
       } else if (value === "title") {
-        return a.title > b.title ? 1 : -1;
+        return a.title.localeCompare(b.title);
       }
       return 0;
     });
@@ -51,8 +64,11 @@ function App() {
         <button onClick={() => sortHandler("userId")}>Sort By User ID</button>
         <button onClick={() => sortHandler("title")}>Sort By Title</button>
       </div>
-
-      <Table headers={["User ID", "ID", "Title"]} data={sortedData} />
+      {isPending && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
+      {data && !isPending && !error && (
+        <Table headers={["User ID", "ID", "Title"]} data={sortedData} />
+      )}
     </div>
   );
 }
