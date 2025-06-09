@@ -10,6 +10,7 @@ type ToDoItem = {
 };
 
 export type ToDoList = ToDoItem[];
+
 const fetchToDos = async (): Promise<ToDoList> => {
   return fetch("https://jsonplaceholder.typicode.com/todos")
     .then((response) => response.json())
