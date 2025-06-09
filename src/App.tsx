@@ -13,7 +13,12 @@ export type ToDoList = ToDoItem[];
 
 const fetchToDos = async (): Promise<ToDoList> => {
   return fetch("https://jsonplaceholder.typicode.com/todos")
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Something went wrong!");
+      }
+      return response.json();
+    })
     .then((json) => {
       return json as ToDoList;
     });
